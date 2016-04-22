@@ -146,7 +146,29 @@ e.g.
         // and public getters and setters ...
 ```
             
-## step 3: now use the 'magically appearing' static DB CRUD methods
+## step 3: create a repository class mapping your DB table to  your PHP entity class
+
+e.g. create repository class DvdRepository mapping from table 'dvds' to PHP class 'Dvd':
+
+``` php
+
+    <?php
+    namespace Evote;
+    
+    use Mattsmithdev\PdoCrudRepo\DatabaseManager;
+    use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
+    
+    class DvdRepository extends DatabaseTableRepository
+    {
+        public function __construct()
+        {
+            parent::__construct('Evote', 'Dvd', 'dvds');
+        }
+    }
+    
+```    
+
+## step 4: now use the 'magically appearing' static DB CRUD methods
 
 e.g. to get an array of all dvd records from table 'dvds' just write:
 
