@@ -3,7 +3,7 @@
 Note - this is essentially an alternative approach to the [pdo-crud-for-free](link-packagist) package
 
 
-This package provides a few classes to try to give programmers using PDO (with MySQL) in a simple way some instance CRUD (create-read-update-delete) method, 'for free', simply by subclassing **\Mattsmithdev\PdoCrud\DatabaseTable**.
+This package provides a few classes to try to give programmers using PDO (with MySQL) in a simple way some instance CRUD (create-read-update-delete) method, 'for free', simply by creating an entity repository sub-class of Mattsmithdev\PdoCrudRepo\DatabaseTableRepository.
 
 All code is (intended :-) to follow PSR-1, PSR-2 coding standards. Classes are following the PSR-4 autoloading standard.
 
@@ -18,46 +18,60 @@ $ composer require mattsmithdev/pdo-crud-for-free-repositories
 
 ## Usage
 
-This example assumes you have a MySQL DB table named 'products', with columns 'id' and 'description'. You need to write a corresponding class 'Product' (note capital first letter ...).
+This example assumes you have a MySQL DB table named 'dvds', with columns 'id' and 'description'. You need to write a corresponding class 'Dvd' (note capital first letter ...). Also you need to write a repository class to work between your PHP class and is correspnding table, in this example the repository class is named 'DvDRepository':
 
 ``` php
-
-// file: /src/Product.php
-namespace <MyNameSpace>;
-
-class Product extends \Mattsmithdev\PdoCrud\DatabaseTable 
-{
-    // private properties with EXACTLY same names as DB table columns
-    private $id;
-    private $description;
+    // file: /src/Product.php
+    namespace <MyNameSpace>;
     
-    public function getDescription()
+    class Product
     {
-        return $this->description;
+        // private properties with EXACTLY same names as DB table columns
+        private $id;
+        private $description;
+        
+        public function getDescription()
+        {
+            return $this->description;
+        }
     }
-}
 ```
 
+
 ``` php
+    namespace Evote;
+    
+    use Mattsmithdev\PdoCrudRepo\DatabaseManager;
+    use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
+    
+    class DvdRepository extends DatabaseTableRepository
+    {
+        public function __construct()
+        {
+            parent::__construct('Evote', 'Dvd', 'dvds');
+        }
+```
 
-// file: /public-web/index.php or /src/SomeController->method()
 
-require_once __DIR__ . '/<PATH_TO_AUTLOAD>';
-
-// the DatabaseManager class needs the following 4 constants to be defined in order to create the DB connection
-define('DB_HOST', '<host>');
-define('DB_USER', '<db_username>');
-define('DB_PASS', '<db_userpassword>');
-define('DB_NAME', '<db_name>');
-
-// get all products from DB as array of Product objects
-$products = \<MyNameSpace>\Product::getAll();
-
-// outputs something like:
-//  hammer, nail, nuts, bolts
-foreach ($products as $product){
-    print $product->getDescription() . ', ';
-}
+``` php
+    // file: /public-web/index.php or /src/SomeController->method()
+    
+    require_once __DIR__ . '/<PATH_TO_AUTLOAD>';
+    
+    // the DatabaseManager class needs the following 4 constants to be defined in order to create the DB connection
+    define('DB_HOST', '<host>');
+    define('DB_USER', '<db_username>');
+    define('DB_PASS', '<db_userpassword>');
+    define('DB_NAME', '<db_name>');
+    
+    // get all products from DB as array of Product objects
+    $products = \<MyNameSpace>\Product::getAll();
+    
+    // outputs something like:
+    //  hammer, nail, nuts, bolts
+    foreach ($products as $product){
+        print $product->getDescription() . ', ';
+    }
 ```
 
 For more details see below. Also there is a full sample web application project on GitGub at:
