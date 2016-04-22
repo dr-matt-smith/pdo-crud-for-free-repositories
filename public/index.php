@@ -14,4 +14,15 @@ use Evote\Dvd;
 $dvdRepository = new DvdRepository();
 $dvds = $dvdRepository->getAll();
 
-var_dump($dvds);
+foreach($dvds as $dvd){
+    /**
+     * @var $dvd Dvd
+     */
+    print 'id = ' . $dvd->getId();
+    print '<br>';
+    print 'title = ' . $dvd->getTitle();
+    print '<br>';
+    print 'category' . $dvd->getCategory();
+    print '<p>';
+
+}
