@@ -29,7 +29,4 @@ class DvdRepository extends DatabaseTableRepository
         return $dvds;
     }
 
-
-
-
 }

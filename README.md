@@ -1,6 +1,9 @@
-# pdo-crud-for-free+(repositories)
+# pdo-crud-for-free-repositories+(repositories)
 
-Note - this is essentially an alternative approach to the [pdo-crud-for-free](link-packagist) package
+[![Build Status](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories.svg?branch=master)](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories) [![Latest Stable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/stable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Total Downloads](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/downloads)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Latest Unstable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/unstable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![License](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/license)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories)
+
+
+Note - this is essentially an alternative approach to the [pdo-crud-for-free-repositories](link-packagist) package
 
 
 This package provides a few classes to try to give programmers using PDO (with MySQL) in a simple way some instance CRUD (create-read-update-delete) method, 'for free', simply by creating an entity repository sub-class of Mattsmithdev\PdoCrudRepo\DatabaseTableRepository.
@@ -12,7 +15,7 @@ All code is (intended :-) to follow PSR-1, PSR-2 coding standards. Classes are f
 Via Composer
 
 ``` bash
-$ composer require mattsmithdev/pdo-crud-for-free-repositories
+$ composer require mattsmithdev/pdo-crud-for-free-repositories-repositories
 ```
 
 
@@ -64,18 +67,29 @@ This example assumes you have a MySQL DB table named 'dvds', with columns 'id' a
     define('DB_PASS', '<db_userpassword>');
     define('DB_NAME', '<db_name>');
     
-    // get all products from DB as array of Product objects
-    $products = \<MyNameSpace>\Product::getAll();
+    // create a repository object
+    $dvdRepository = new DvdRepository();
     
-    // outputs something like:
-    //  hammer, nail, nuts, bolts
-    foreach ($products as $product){
-        print $product->getDescription() . ', ';
+    // get all records from DB as an array of Dvd objects
+    $dvds = $dvdRepository->getAll();
+    
+    // output each Dvd object as HTML lines in the form 'title = Jaws II'
+    foreach($dvds as $dvd){
+        /**
+         * @var $dvd Dvd
+         */
+        print 'id = ' . $dvd->getId();
+        print '<br>';
+        print 'title = ' . $dvd->getTitle();
+        print '<br>';
+        print 'category' . $dvd->getCategory();
+        print '<p>';
+    
     }
 ```
 
 For more details see below. Also there is a full sample web application project on GitGub at:
- (pdo-crud-for-free-example-project)[https://github.com/dr-matt-smith/pdo-crud-for-free-example-project]
+ (pdo-crud-for-free-repositories-example-project)[https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project]
 
 # More detailed usage instructions (and important assumptions)
 
@@ -89,23 +103,20 @@ e.g.
     category
     price
 
-## ASSUMPTION 2: lower case plural DB table name mapping to upper case singular PHP class name
-If you have a DB table '**products**' this will correspond to a PHP class '**Product**'
-
-table names are named lower case, and are plural nouns, e.g '**users**'
-PHP class names are named with a capital first letter, and are singular nouns, e.g. '**User**'
-
-## ASSUMPTION 3: no constructor for your PHP classes
+## ASSUMPTION 2: no constructor for your PHP classes
 due to the nature of PDO populating properties of objects when DB rows are converted into object instances
 do not have a constructor for the PHP classes that correspond to your DB tables
 
 so you'd create a new object, and use the objects public 'setter' methods
 e.g.
-$p = new Product();
-$p->setDescription('hammer');
-$p->setPrice(9.99);
-etc.
 
+``` php
+
+    $p = new Product();
+    $p->setDescription('hammer');
+    $p->setPrice(9.99);
+    etc.
+```
 
 ## step 1: create your DB tables
 e.g. create your tables (with integer 'id' field, primary key, auto-increment)
@@ -120,55 +131,71 @@ e.g. SQL table to store DVD data
 ## step 2: create a corresponding PHP class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
 e.g.
 
+``` php
     <?php
     namespace Whatever;
     
-    use Mattsmithdev\PdoCrud\DatabaseTable;
-    
-        class Dvd extends DatabaseTable
-        {
-            private $id;
-            private $title;
-            private $category;
-            private $price;
-            
-            // and public getters and setters ...
+
+    class Dvd
+    {
+        private $id;
+        private $title;
+        private $category;
+        private $price;
+        
+        // and public getters and setters ...
+```
             
 ## step 3: now use the 'magically appearing' static DB CRUD methods
 
 e.g. to get an array of all dvd records from table 'dvds' just write:
 
-    $dvds = Dvd::getAll();
+``` php
+
+    $dvdRepository = new DvdRepository();
+    $dvds = $dvdRepository->getAll();
     
+```    
 
 ## ::getAll()
 this method returns an array of objects for each row of the corresponding DB table
 e.g.
 
+``` php
     // array of Dvd objects, populated from database table 'dvds'
-    $dvds = Dvd::getAll();
+    $dvdRepository = new DvdRepository();
+    $dvds = $dvdRepository->getAll();
+```
 
 ## ::getOneById($id)
 this method returns one object of class for the corresponding DB table record with the given 'id'
 (returns 'null' if no such record exists with that primary key id)
 e.g.
 
+``` php
     // one Dvd object (or 'null'), populated by row in database table 'dvds' with id=27
-    $dvds = Dvd::getOneById(27);
+    $dvdRepository = new DvdRepository();
+    $dvd = $dvdRepository->getOneById(27);
+```
 
 ## ::delete($id)
 this method deletes the record corresponding to the given 'id'
 returns true/false depending on success of the deletion
 e.g.
 
+``` php
     // delete row in database table 'dvds' with id=12
-    $deleteSuccess = Dvd::delete(12);
+    $dvdRepository = new DvdRepository();
+    $deleteSuccess = $dvdRepository->delete(12);
+```
     
 ## ::insert($dvd)
 this method adds a new row to the database, based on the contents of the provided object
 (any 'id' in this object is ignored, since the table is auto-increment, so it's left to the DB to assign a new, unique 'id' for new records)
 returns the 'id' of the new record (or -1 if error when inserting)
 e.g.
+
+``` php
 
     // delete row in database table 'dvds' with id=12
     $dvd = new Dvd();
@@ -177,7 +204,8 @@ e.g.
     $dvd->setPrice(9.99);
     
     // create the new Dvd row
-    $id = Dvd::insert($dvd);
+    $dvdRepository = new DvdRepository();
+    $id = $dvdRepository->insert($dvd);
     
     // decision based on success/failure of insert
     if ($id < 0){
@@ -185,7 +213,7 @@ e.g.
     } else {
         // success action
     }
-    
+```    
     
 ## ::update($dvd)
 this method adds a UPDATES an existing row in the database, based on the contents of the provided object
@@ -193,9 +221,11 @@ returns true/false depending on success of the deletion
 
 e.g.
 
+``` php
     // update DB record for object 'dvd'
-    $updateSuccess = Dvd:update($dvd);
-    
+    $dvdRepository = new DvdRepository();
+    $updateSuccess = $dvdRepository->update($dvd);
+```    
             
 ## ::searchByColumn($columnName, $searchText))
 perform an SQL '%' wildcard search on the given column with the given search text
@@ -203,13 +233,18 @@ returns an array of objects that match an SQL 'LIKE' query
 
 e.g.
 
+``` php
     // get all Dvds with 'jaws' in the title
-    $jawsDvds = Dvd::searchByColumn('title', 'jaws');
+    $dvdRepository = new DvdRepository();
+    $jawsDvds = $dvdRepository->searchByColumn('title', 'jaws');
+```
 
 ## custom PDO methods
 If the 'free' DB methods are insufficient, it's easy to add your own methods to your PHP classes that correspond to your DB tables.
 
 Here is a method that could be added to a class **Product** allowing a custom search by 'id' and text within 'descrition':
+
+``` php
 
     /**
      * illustrate custom PDO DB method
@@ -220,12 +255,12 @@ Here is a method that could be added to a class **Product** allowing a custom se
      *
      * @return array
      */
-    public static function customSearch($minId, $searchText)
+    public function customSearch($minId, $searchText)
     {
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
-        // wrap wildcard '%' around the serach text for the SQL query
+        // wrap wildcard '%' around the search text for the SQL query
         $searchText = '%' . $searchText . '%';
 
         $sql = 'SELECT * FROM products WHERE (description LIKE :searchText) AND (id > :minId)';
@@ -233,20 +268,24 @@ Here is a method that could be added to a class **Product** allowing a custom se
         $statement = $connection->prepare($sql);
         $statement->bindParam(':minId', $minId, \PDO::PARAM_INT);
         $statement->bindParam(':searchText', $searchText, \PDO::PARAM_STR);
-        $statement->setFetchMode(\PDO::FETCH_CLASS, '\\' . __CLASS__);
+        $statement->setFetchMode(\PDO::FETCH_CLASS, $this->getClassNameForDbRecords());
         $statement->execute();
 
         $products = $statement->fetchAll();
 
         return $products;
     }
+```
     
 and here is an example of its usage, in a controller function:
+
+``` php
 
     // get products from DB as array of Product objects - id > minId, description containing $searchText
     $minId = 2;
     $searchText = 'er';
-    $products = Product::customSearch($minId, $searchText);
+    $dvdRepository = new DvdRepository();
+    $products = $dvdRepository->customSearch($minId, $searchText);
 
     // outputs something like:
     //  [5] pliers
@@ -258,6 +297,7 @@ and here is an example of its usage, in a controller function:
     }
 
     //  [1] nut -- not listed due to search criteria
+```
 
 ## Change log
 
