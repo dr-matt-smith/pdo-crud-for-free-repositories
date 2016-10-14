@@ -18,11 +18,11 @@ foreach($dvds as $dvd){
     /**
      * @var $dvd Dvd
      */
-    print 'id = ' . $dvd->getId();
-    print '<br>';
-    print 'title = ' . $dvd->getTitle();
-    print '<br>';
-    print 'category' . $dvd->getCategory();
-    print '<p>';
+    print PHP_EOL .  'id = ' . $dvd->getId();
+    print PHP_EOL .  '<br>';
+    print PHP_EOL .  'title = ' . $dvd->getTitle();
+    print PHP_EOL .  '<br>';
+    print PHP_EOL .  'category' . $dvd->getCategory();
+    print PHP_EOL .  '<p>';
 
 }

@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories.svg?branch=master)](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories) [![Latest Stable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/stable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Total Downloads](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/downloads)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Latest Unstable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/unstable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![License](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/license)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories)
 
 
-Note - this is essentially an alternative approach to the [pdo-crud-for-free-repositories](link-packagist) package
+Note - this is essentially an alternative approach to the [pdo-crud-for-free](link-packagist) package
 
 
 This package provides a few classes to try to give programmers using PDO (with MySQL) in a simple way some instance CRUD (create-read-update-delete) method, 'for free', simply by creating an entity repository sub-class of Mattsmithdev\PdoCrudRepo\DatabaseTableRepository.
@@ -15,7 +15,7 @@ All code is (intended :-) to follow PSR-1, PSR-2 coding standards. Classes are f
 Via Composer
 
 ``` bash
-$ composer require mattsmithdev/pdo-crud-for-free-repositories-repositories
+$ composer require mattsmithdev/pdo-crud-for-free-repositories
 ```
 
 
