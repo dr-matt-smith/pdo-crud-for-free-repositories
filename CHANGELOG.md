@@ -20,3 +20,6 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Security
 - Nothing
+
+### Faulty Towers
+- I know nothing (but I learn, I learn !!)
