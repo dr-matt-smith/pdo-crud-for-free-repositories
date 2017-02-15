@@ -24,24 +24,25 @@ $ composer require mattsmithdev/pdo-crud-for-free-repositories
 This example assumes you have a MySQL DB table named 'dvds', with columns 'id' and 'description'. You need to write a corresponding class 'Dvd' (note capital first letter ...). Also you need to write a repository class to work between your PHP class and is correspnding table, in this example the repository class is named 'DvDRepository':
 
 ``` php
-    // file: /src/Product.php
+    // file: /src/Dvd.php
     namespace <MyNameSpace>;
     
-    class Product
+    class Dvd
     {
         // private properties with EXACTLY same names as DB table columns
         private $id;
-        private $description;
+        private $title;
         
-        public function getDescription()
+        public function getTitle()
         {
-            return $this->description;
+            return $this->title;
         }
     }
 ```
 
 
 ``` php
+    // file: /src/DvdRepository.php
     namespace Evote;
     
     use Mattsmithdev\PdoCrudRepo\DatabaseManager;
