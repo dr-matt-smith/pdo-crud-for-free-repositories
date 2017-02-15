@@ -148,7 +148,7 @@ e.g.
             
 ## step 3: create a repository class mapping your DB table to  your PHP entity class
 
-e.g. create repository class DvdRepository mapping from table 'dvds' to PHP class 'Dvd':
+e.g. create repository class DvdRepository mapping from table `dvds` to PHP class `Evote\Dvd`:
 
 ``` php
 

@@ -1,6 +1,8 @@
 <?php
 namespace Evote;
 
+require_once __DIR__ . '/Dvd.php';
+
 use Mattsmithdev\PdoCrudRepo\DatabaseManager;
 use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
 
@@ -18,14 +20,14 @@ class DvdRepository extends DatabaseTableRepository
 
         // wrap wildcard '%' around the serach text for the SQL query
         $searchText = '%' . $searchText . '%';
+        $sql = "SELECT * from dvds WHERE (title LIKE :searchText) or (category LIKE :searchText)";
 
-        $statement = $connection->prepare('SELECT * from dvds WHERE (title LIKE :searchText) or (category LIKE :searchText)');
+        $statement = $connection->prepare($sql);
         $statement->bindParam(':searchText', $searchText, \PDO::PARAM_STR);
         $statement->setFetchMode(\PDO::FETCH_CLASS, $this->getClassNameForDbRecords());
         $statement->execute();
 
         $dvds = $statement->fetchAll();
-
         return $dvds;
     }
 
