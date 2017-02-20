@@ -4,7 +4,16 @@ All Notable changes to `pdo-crud-for-free-repositories` will be documented in th
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## NEXT - YYYY-MM-DD
+## NEXT - 2017
+
+- split DatabaseTableRepository actions into 2
+
+    - read only actions like getAll() and getOneById()
+
+    - change actions like create(), update() and delete()
+
+    - this would make it safer to use on DB views as well as actual tables
+
 
 ### Added
 - Nothing
