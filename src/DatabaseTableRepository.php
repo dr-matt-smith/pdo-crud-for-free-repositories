@@ -139,15 +139,19 @@ class DatabaseTableRepository
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
+
         $objectAsArrayForSqlInsert = DatatbaseUtility::objectToArrayLessId($object);
         $fields = array_keys($objectAsArrayForSqlInsert);
         $insertFieldList = DatatbaseUtility::fieldListToInsertString($fields);
         $valuesFieldList = DatatbaseUtility::fieldListToValuesString($fields);
 
-        $statement = $connection->prepare('INSERT into '. $this->tableName . ' ' . $insertFieldList . $valuesFieldList);
-        $statement->execute($objectAsArrayForSqlInsert);
+        $sql = 'INSERT into '. $this->tableName . ' ' . $insertFieldList . $valuesFieldList;
 
+
+        $statement = $connection->prepare($sql);
+        $statement->execute($objectAsArrayForSqlInsert);
         $queryWasSuccessful = ($statement->rowCount() > 0);
+
         if($queryWasSuccessful) {
             return $connection->lastInsertId();
         } else {
@@ -185,5 +189,16 @@ class DatabaseTableRepository
 
         return $queryWasSuccessful;
     }
+
+    public function dropTable()
+    {
+        $db = new DatabaseManager();
+        $connection = $db->getDbh();
+
+        // Drop table messages from file db
+        $sql = 'DROP TABLE ' . $this->tableName ;
+        $connection->exec($sql);
+    }
+
 
 }

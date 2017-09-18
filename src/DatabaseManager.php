@@ -17,29 +17,8 @@ namespace Mattsmithdev\PdoCrudRepo;
  */
 class DatabaseManager
 {
-    /**
-     * get host name from config constant
-     * @var string
-     */
-    private $host = DB_HOST;
-
-    /**
-     * get DB username from config constant
-     * @var string
-     */
-    private $user = DB_USER;
-
-    /**
-     * get DB password from config constant
-     * @var string
-     */
-    private $pass = DB_PASS;
-
-    /**
-     * get DB name from config constant
-     * @var string
-     */
-    private $dbname = DB_NAME;
+    const TYPE_SQLITE = 0;
+    const TYPE_MYSQL = 1;
 
     /**
      * the DataBase Handler is our db connection object
@@ -55,18 +34,28 @@ class DatabaseManager
 
     public function __construct()
     {
-        // DSN - the Data Source Name - requred by the PDO to connect
-        $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
         try {
+            // DSN - the Data Source Name - requred by the PDO to connect
+            if(defined('DB_TYPE') && DB_TYPE == self::TYPE_SQLITE) {
+                $dsn = 'sqlite:' . DB_PATH;
+            } else {
+                $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
+            }
+
             // Set options
             $options = array(
                 \PDO::ATTR_PERSISTENT => true,
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
             );
-            $this->dbh = new \PDO($dsn, $this->user, $this->pass, $options);
+
+            if(defined('DB_TYPE') && DB_TYPE == self::TYPE_SQLITE) {
+                $this->dbh = new \PDO($dsn);
+            } else {
+                $this->dbh = new \PDO($dsn, DB_USER, DB_PASS, $options);
+            }
         } catch (\PDOException $e) {
             $this->error = $e->getMessage();
-            print 'sorry - a database error occured - please contact the site administrator ...';
+            print 'sorry - a database error occurred - please contact the site administrator ...';
             print '<br>';
             print  $e->getMessage();
         }

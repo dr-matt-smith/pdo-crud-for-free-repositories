@@ -135,7 +135,7 @@ class DatatbaseUtility
             $formattedFields[] = $fieldWithColonPrefix;
         }
 
-        return ' value (' . implode(', ', $formattedFields) . ')';
+        return ' VALUES (' . implode(', ', $formattedFields) . ')';
     }
 
     /**
