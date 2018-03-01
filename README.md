@@ -212,7 +212,7 @@ e.g.
     $deleteSuccess = $dvdRepository->delete(12);
 ```
     
-## ::insert($dvd)
+## ::create($dvd)
 this method adds a new row to the database, based on the contents of the provided object
 (any 'id' in this object is ignored, since the table is auto-increment, so it's left to the DB to assign a new, unique 'id' for new records)
 returns the 'id' of the new record (or -1 if error when inserting)
@@ -228,7 +228,7 @@ e.g.
     
     // create the new Dvd row
     $dvdRepository = new DvdRepository();
-    $id = $dvdRepository->insert($dvd);
+    $id = $dvdRepository->create($dvd);
     
     // decision based on success/failure of insert
     if ($id < 0){
