@@ -21,7 +21,7 @@ $ composer require mattsmithdev/pdo-crud-for-free-repositories
 
 ## Usage
 
-This example assumes you have a MySQL DB table named 'dvds', with columns 'id' and 'description'. You need to write a corresponding class 'Dvd' (note capital first letter ...). Also you need to write a repository class to work between your PHP class and is correspnding table, in this example the repository class is named 'DvDRepository':
+This example assumes you have a MySQL DB table named 'dvds', with columns 'id' and 'description'. You need to write a corresponding class 'Dvd' (note capitalization on the first letter). Also you need to write a repository class to work between your PHP class and is correspnding table, in this example the repository class is named 'DvDRepository':
 
 ``` php
     // file: /src/Dvd.php
@@ -90,7 +90,7 @@ This example assumes you have a MySQL DB table named 'dvds', with columns 'id' a
 ```
 
 For more details see below. Also there is a full sample web application project on GitGub at:
- (pdo-crud-for-free-repositories-example-project)[https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project]
+ [pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
 
 # More detailed usage instructions (and important assumptions)
 
@@ -104,7 +104,7 @@ e.g.
     category
     price
 
-## ASSUMPTION 2: no constructor for your PHP classes
+## ASSUMPTION 2: No constructor for your PHP classes.
 due to the nature of PDO populating properties of objects when DB rows are converted into object instances
 do not have a constructor for the PHP classes that correspond to your DB tables
 
@@ -119,7 +119,7 @@ e.g.
     etc.
 ```
 
-## step 1: create your DB tables
+## Step 1: Create your DB tables.
 e.g. create your tables (with integer 'id' field, primary key, auto-increment)
 
 e.g. SQL table to store DVD data
@@ -129,7 +129,7 @@ e.g. SQL table to store DVD data
     category:text
     price:float
 
-## step 2: create a corresponding PHP class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
+## Step 2: Create a corresponding PHP class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
 e.g.
 
 ``` php
@@ -147,7 +147,7 @@ e.g.
         // and public getters and setters ...
 ```
             
-## step 3: create a repository class mapping your DB table to  your PHP entity class
+## Step 3: Create a repository class mapping your DB table to your PHP entity class.
 
 e.g. create repository class DvdRepository mapping from table `dvds` to PHP class `Evote\Dvd`:
 
@@ -169,7 +169,7 @@ e.g. create repository class DvdRepository mapping from table `dvds` to PHP clas
     
 ```    
 
-## step 4: now use the 'magically appearing' static DB CRUD methods
+## Step 4: Now use the 'magically appearing' static DB CRUD methods.
 
 e.g. to get an array of all dvd records from table 'dvds' just write:
 
@@ -239,7 +239,7 @@ e.g.
 ```    
     
 ## ::update($dvd)
-this method adds a UPDATES an existing row in the database, based on the contents of the provided object
+This method adds a UPDATES an existing row in the database, based on the contents of the provided object
 returns true/false depending on success of the deletion
 
 e.g.
@@ -251,7 +251,7 @@ e.g.
 ```    
             
 ## ::searchByColumn($columnName, $searchText))
-perform an SQL '%' wildcard search on the given column with the given search text
+Perform an SQL '%' wildcard search on the given column with the given search text
 returns an array of objects that match an SQL 'LIKE' query 
 
 e.g.
@@ -322,7 +322,7 @@ and here is an example of its usage, in a controller function:
     //  [1] nut -- not listed due to search criteria
 ```
 
-## Change log
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
@@ -342,7 +342,7 @@ If you discover any security related issues, please email dr_matt_smith@me.com i
 
 ## Credits
 
-- [Matt Smith][https://github.com/dr-matt-smith]
+- [Matt Smith](https://github.com/dr-matt-smith)
 
 ## License
 
