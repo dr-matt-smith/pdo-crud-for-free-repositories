@@ -119,6 +119,21 @@ e.g.
     etc.
 ```
 
+
+## ASSUMPTION 3: Each class has an integer, `id` property
+Each Entity class should have an integer `id` property.
+This property should be an `AUTO_INCREMENT` primary key in the database table schema, e.g.
+
+```sql
+    -- SQL statement to create the table --
+    create table if not exists Product (
+        id integer primary key AUTO_INCREMENT,
+        descrition text,
+        price float
+    );
+```
+
+
 ## Step 1: Create your DB tables.
 e.g. create your tables (with integer 'id' field, primary key, auto-increment)
 
