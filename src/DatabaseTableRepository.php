@@ -113,7 +113,8 @@ class DatabaseTableRepository
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
-        $sql = 'SELECT * from ' . $this->tableName;
+        $sql = 'SELECT * from :table';
+        $sql = str_replace(':table', $this->tableName, $sql);
 
         $statement = $connection->prepare($sql);
         $statement->setFetchMode(\PDO::FETCH_CLASS, $this->classNameForDbRecords);
@@ -128,7 +129,10 @@ class DatabaseTableRepository
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
-        $statement = $connection->prepare('SELECT * from ' . $this->tableName . ' WHERE id=:id');
+        $sql = 'SELECT * from :table WHERE id=:id';
+        $sql = str_replace(':table', $this->tableName, $sql);
+
+        $statement = $connection->prepare($sql);
         $statement->bindParam(':id', $id, \PDO::PARAM_INT);
         $statement->setFetchMode(\PDO::FETCH_CLASS, $this->classNameForDbRecords);
         $statement->execute();
@@ -153,8 +157,13 @@ class DatabaseTableRepository
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
-        $statement = $connection->prepare('DELETE from ' . $this->tableName . ' WHERE id=:id');
+        $sql = 'DELETE from :table WHERE id=:id';
+        $sql = str_replace(':table', $this->tableName, $sql);
+
+        $statement = $connection->prepare($sql);
+//        $statement->bindParam(':table',  $this->tableName);
         $statement->bindParam(':id', $id, \PDO::PARAM_INT);
+
         $queryWasSuccessful = $statement->execute();
         return $queryWasSuccessful;
     }
@@ -162,13 +171,20 @@ class DatabaseTableRepository
 
     public function searchByColumn($columnName, $searchText)
     {
+        $columnName = filter_var($columnName, FILTER_SANITIZE_STRING);
+
         $db = new DatabaseManager();
         $connection = $db->getDbh();
 
         // wrap wildcard '%' around the serach text for the SQL query
         $searchText = '%' . $searchText . '%';
 
-        $statement = $connection->prepare('SELECT * from ' . $this->tableName . ' WHERE ' . $columnName . ' LIKE :searchText');
+        $sql = 'SELECT * from :table WHERE :column LIKE :searchText';
+        $sql = str_replace(':table', $this->tableName, $sql);
+        $sql = str_replace(':column', $columnName, $sql);
+
+        $statement = $connection->prepare($sql);
+//        $statement->bindParam(':column', $columnName, \PDO::PARAM_STR);
         $statement->bindParam(':searchText', $searchText, \PDO::PARAM_STR);
         $statement->setFetchMode(\PDO::FETCH_CLASS, $this->classNameForDbRecords);
         $statement->execute();
@@ -195,7 +211,12 @@ class DatabaseTableRepository
         $insertFieldList = DatatbaseUtility::fieldListToInsertString($fields);
         $valuesFieldList = DatatbaseUtility::fieldListToValuesString($fields);
 
-        $statement = $connection->prepare('INSERT into '. $this->tableName . ' ' . $insertFieldList . $valuesFieldList);
+        $sql = 'INSERT into :table :insertFieldList :valuesFieldList';
+        $sql = str_replace(':table', $this->tableName, $sql);
+        $sql = str_replace(':insertFieldList', $insertFieldList, $sql);
+        $sql = str_replace(':valuesFieldList', $valuesFieldList, $sql);
+
+        $statement = $connection->prepare($sql);
         $statement->execute($objectAsArrayForSqlInsert);
 
         $queryWasSuccessful = ($statement->rowCount() > 0);
@@ -209,7 +230,7 @@ class DatabaseTableRepository
 
     /**
      * insert new record into the DB table
-     * returns new record ID if insertation was successful, otherwise -1
+     * returns new record ID if insertion was successful, otherwise -1
      *
      * @param $object
      *
@@ -226,7 +247,10 @@ class DatabaseTableRepository
         $fields = array_keys($objectAsArrayForSqlInsert);
         $updateFieldList = DatatbaseUtility::fieldListToUpdateString($fields);
 
-        $sql = 'UPDATE '. $this->tableName . ' SET ' . $updateFieldList  . ' WHERE id=:id';
+        $sql = 'UPDATE :table SET :updateFieldList WHERE id=:id';
+        $sql = str_replace(':table', $this->tableName, $sql);
+        $sql = str_replace(':updateFieldList', $updateFieldList, $sql);
+
         $statement = $connection->prepare($sql);
 
         // add 'id' to parameters array
