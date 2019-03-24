@@ -4,6 +4,20 @@ namespace Mattsmithdev\PdoCrudRepo;
 class DatabaseTableRepository
 {
     /**
+     * the (fully namespaced) name of the class corresponding to the database table to be worked with
+     * e.g. \MyCompany\Product
+     *
+     * @var string
+     */
+    private $classNameForDbRecords;
+
+    /**
+     * the name of the database table to be worked with
+     * @var string
+     */
+    private $tableName;
+
+    /**
      * DatabaseTableRepository constructor.
      * @param array $params
      *
@@ -20,17 +34,20 @@ class DatabaseTableRepository
     public function __construct(Array $params = [])
     {
         // e.g.
-        // My\NameSpace\MyClass
+        // My\NameSpace\EntityRepository
         //
-        // $namespace = My\NameSpace
-        // $className = MyClass
-        // $tableName = myclass
-
+        // defaults are as follows:
+        // $namespace = My\NameSpace - entity class in same namespace as repository class
+        // $className = Entity - entity name is repository class less, less the word 'Repository'
+        // $tableName = entity - table name is same as entity class name, but all in loser case
+        //
+        // IF the above 3 defaults are true,
+        // THEN the repository class does not need a constructor at all :-)
 
         // (1) create default values
         // namespace
         try {
-            $reflector = new \ReflectionClass(get_class($this)); // class Foo of namespace A
+            $reflector = new \ReflectionClass(get_class($this));
             $namespace  = $reflector->getNamespaceName();
             $shortName = $reflector->getShortName();
             $className = str_replace('Repository', '', $shortName);
@@ -53,25 +70,10 @@ class DatabaseTableRepository
             $tableName = $params['tableName'];
         }
 
-
         // store namespace class and db table name into properties
         $this->classNameForDbRecords = $namespace . '\\' . $className;
         $this->tableName = $tableName;
     }
-
-    /**
-     * the (fully namespaced) name of the class corresponding to the database table to be worked with
-     * e.g. \MyCompany\Product
-     *
-     * @var string
-     */
-    private $classNameForDbRecords;
-
-    /**
-     * the name of the database table to be worked with
-     * @var string
-     */
-    private $tableName;
 
     /**
      * @return string
