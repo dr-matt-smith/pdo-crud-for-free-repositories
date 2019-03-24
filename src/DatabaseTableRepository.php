@@ -4,6 +4,62 @@ namespace Mattsmithdev\PdoCrudRepo;
 class DatabaseTableRepository
 {
     /**
+     * DatabaseTableRepository constructor.
+     * @param array $params
+     *
+     * possible params:
+     *      'namespace' e.g. 'MyNameSpace'
+     *      'dbClass' e.g 'Movie'
+     *      'tableName' e.g. 'movie'
+     *
+     * assumption:
+     *      namespace of dbTable is same as namespace of repository class
+     *      repository class is dbTable name with suffix 'Repository', e.g. Movie, MovieRepository
+     *      table name is lower case version of class name, e.g. table 'movie' for class 'Movie'
+     */
+    public function __construct(Array $params = [])
+    {
+        // e.g.
+        // My\NameSpace\MyClass
+        //
+        // $namespace = My\NameSpace
+        // $className = MyClass
+        // $tableName = myclass
+
+
+        // (1) create default values
+        // namespace
+        try {
+            $reflector = new \ReflectionClass(get_class($this)); // class Foo of namespace A
+            $namespace  = $reflector->getNamespaceName();
+            $shortName = $reflector->getShortName();
+            $className = str_replace('Repository', '', $shortName);
+            $tableName = strtolower($className);
+        } catch (\Exception $e) {
+            $namespace = 'error-trying-to-infer-namespace';
+            $className = 'error-trying-to-infer-classname';
+            $tableName = 'error-trying-to-infer-tablename';
+
+        }
+
+        // (2) use provided params, if found
+        if(isset($params['namespace'])){
+            $namespace = $params['namespace'];
+        }
+        if(isset($params['className'])){
+            $className = $params['className'];
+        }
+        if(isset($params['tableName'])){
+            $tableName = $params['tableName'];
+        }
+
+
+        // store namespace class and db table name into properties
+        $this->classNameForDbRecords = $namespace . '\\' . $className;
+        $this->tableName = $tableName;
+    }
+
+    /**
      * the (fully namespaced) name of the class corresponding to the database table to be worked with
      * e.g. \MyCompany\Product
      *
@@ -49,13 +105,6 @@ class DatabaseTableRepository
         $this->tableName = $tableName;
     }
 
-
-
-    public function __construct($namespace, $classNameForDbRecords, $tableName)
-    {
-        $this->classNameForDbRecords = $namespace . '\\' . $classNameForDbRecords;
-        $this->tableName = $tableName;
-    }
 
     public function getAll()
     {
@@ -130,7 +179,7 @@ class DatabaseTableRepository
 
     /**
      * insert new record into the DB table
-     * returns new record ID if insertation was successful, otherwise -1
+     * returns new record ID if insertion was successful, otherwise -1
      * @param Object $object
      * @return integer
      */

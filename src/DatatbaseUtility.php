@@ -62,9 +62,9 @@ class DatatbaseUtility
      * e.g. convert from this:
      * Array
      * (
-     *      [\0Itb\Message\0text] => hello there
-     *      [\0Itb\Message\0user] => matt
-     *      [\0Itb\Message\0timestamp] => 1456340361
+     *      [\Itb\Message\text] => hello there
+     *      [\Itb\Message\user] => matt
+     *      [\Itb\Message\timestamp] => 1456340361
      * )
      *
      * to this:
