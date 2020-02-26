@@ -6,9 +6,17 @@
 Note - this is essentially an alternative approach to the [pdo-crud-for-free](link-packagist) package
 
 
+
 This package provides a few classes to try to give programmers using PDO (with MySQL) in a simple way some instance CRUD (create-read-update-delete) methods, 'for free', simply by creating an entity repository sub-class of Mattsmithdev\PdoCrudRepo\DatabaseTableRepository.
 
 All code is (intended :-) to follow PSR-1, PSR-12 coding standards. Classes are following the PSR-4 autoloading standard.
+
+## Example project using this library
+
+There is an examle project illustreating use of this library:
+
+- [https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
+
 
 ## Install
 
