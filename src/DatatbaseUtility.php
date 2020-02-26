@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: matt
- * Date: 24/02/2016
- * Time: 22:31
- */
+
 namespace Mattsmithdev\PdoCrudRepo;
 
 class DatatbaseUtility

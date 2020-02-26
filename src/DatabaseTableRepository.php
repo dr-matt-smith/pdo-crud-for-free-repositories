@@ -108,7 +108,7 @@ class DatabaseTableRepository
     }
 
 
-    public function getAll()
+    public function findAll()
     {
         $db = new DatabaseManager();
         $connection = $db->getDbh();
@@ -124,7 +124,7 @@ class DatabaseTableRepository
         return $objects;
     }
 
-    public function getOneById($id)
+    public function find($id)
     {
         $db = new DatabaseManager();
         $connection = $db->getDbh();
@@ -163,6 +163,29 @@ class DatabaseTableRepository
         $statement = $connection->prepare($sql);
 //        $statement->bindParam(':table',  $this->tableName);
         $statement->bindParam(':id', $id, \PDO::PARAM_INT);
+
+        $queryWasSuccessful = $statement->execute();
+        return $queryWasSuccessful;
+    }
+
+
+
+    /**
+     * delete all records- return true/false depending on delete success
+     *
+     * @return bool
+     */
+
+    public function deleteAll()
+    {
+        $db = new DatabaseManager();
+        $connection = $db->getDbh();
+
+        $sql = 'TRUNCATE TABLE :table';
+        $sql = str_replace(':table', $this->tableName, $sql);
+
+        $statement = $connection->prepare($sql);
+//        $statement->bindParam(':table',  $this->tableName);
 
         $queryWasSuccessful = $statement->execute();
         return $queryWasSuccessful;
@@ -260,5 +283,64 @@ class DatabaseTableRepository
 
         return $queryWasSuccessful;
     }
+
+
+    /**
+     * drop the table associated with this repository
+     *
+     * @return bool
+     */
+    public function dropTable()
+    {
+        $db = new DatabaseManager();
+        $connection = $db->getDbh();
+
+        $sql = 'DROP TABLE IF EXISTS :table';
+        $sql = str_replace(':table', $this->tableName, $sql);
+
+        $statement = $connection->prepare($sql);
+//        $statement->execute();
+
+        $queryWasSuccessful = $statement->execute();
+
+        return $queryWasSuccessful;
+    }
+
+    /**
+     * create the table associated with this repository
+     *
+     * @param $sql - optional SQL CREATE statement
+     * DEFAULT: Look for a constant CREATE_TABLE_SQL defined in the entity class associated with this repository
+     *
+     * @return bool
+     *
+EXAMPLE OF SQL needed in Entity class:
+ const CREATE_TABLE_SQL =
+    <<<HERE
+    CREATE TABLE IF NOT EXISTS movie (
+    id integer PRIMARY KEY AUTO_INCREMENT,
+    title text,
+    price float,
+    category text
+    )
+    HERE;
+
+     */
+
+    public function createTable($sql = null)
+    {
+        print "--------------- DatabaseTableRepository->createTable() ----------------\n";
+        print "NOTE:: Looking for a constant CREATE_TABLE_SQL defined in the entity class associated with this repository\n";
+        print "-----------------------------------------------------------------------\n";
+        if(empty($sql)){
+            $sql = $this->classNameForDbRecords::CREATE_TABLE_SQL;
+        }
+        $db = new DatabaseManager();
+        $connection = $db->getDbh();
+
+        $statement = $connection->prepare($sql);
+        $statement->execute();
+    }
+
 
 }

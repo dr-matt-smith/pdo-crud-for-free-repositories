@@ -4,22 +4,22 @@ All Notable changes to `pdo-crud-for-free-repositories` will be documented in th
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## NEXT - 2017
+## NEXT - 2021...
 
-- split DatabaseTableRepository actions into 2
-
-    - read only actions like getAll() and getOneById()
-
-    - change actions like create(), update() and delete()
-
-    - this would make it safer to use on DB views as well as actual tables
+- some SQL generation (CREATE TABLE etc.)
 
 
 ### Added
-- Nothing
+2 main changes for this release:
+
+- default constructor for DatabaseTableRepository()
+
+    - defaults are that <Name>Repository relates to a <Name> entity class
+    - <Name> entity class is in same namespace as <Name>Repository
+    - thee DB table is <name> (singular, lowercase)
 
 ### Deprecated
-- Nothing
+- constructor for DatabaseTableRepository()
 
 ### Fixed
 - Nothing
