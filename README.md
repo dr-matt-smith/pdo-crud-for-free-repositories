@@ -13,7 +13,7 @@ All code is (intended :-) to follow PSR-1, PSR-12 coding standards. Classes are 
 
 ## Example project using this library
 
-There is an examle project illustreating use of this library:
+There is an example project illustrating use of this library:
 
 - [https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
 
@@ -29,13 +29,13 @@ $ composer require mattsmithdev/pdo-crud-for-free-repositories
 
 ## Usage
 
-This example assumes you have a MySQL DB table named 'dvds', with columns 'id' and 'description'. You need to write a corresponding class 'Dvd' (note capitalization on the first letter). Also you need to write a repository class to work between your PHP class and is correspnding table, in this example the repository class is named 'DvDRepository':
+This example assumes you have a MySQL DB table named 'movie', with columns 'id' and 'title'. You need to write a corresponding class 'Movie' (note capitalization on the first letter). Also you need to write a repository class to work between your PHP class and is corresponding table, in this example the repository class is named 'MovieRepository':
 
 ``` php
-    // file: /src/Dvd.php
+    // file: /src/Movie.php
     namespace <MyNameSpace>;
     
-    class Dvd
+    class Movie
     {
         // private properties with EXACTLY same names as DB table columns
         private $id;
@@ -58,6 +58,7 @@ This example assumes you have a MySQL DB table named 'dvds', with columns 'id' a
     
     class DvdRepository extends DatabaseTableRepository
     {
+        // no methods needed if you've followed defaults
         // all the 'magic' is done through relfection ...
     }
 
@@ -76,24 +77,21 @@ This example assumes you have a MySQL DB table named 'dvds', with columns 'id' a
     define('DB_NAME', '<db_name>');
     
     // create a repository object
-    use <MyNameSpace>\DvdRepository;
-    $dvdRepository = new DvdRepository();
+    use <MyNameSpace>\MovieRepository;
+    $movieRepository = new MovieRepository();
     
     // get all records from DB as an array of Dvd objects
-    $dvds = $dvdRepository->findAll();
+    $movies = $movieRepository->findAll();
     
     // output each Dvd object as HTML lines in the form 'title = Jaws II'
-    foreach($dvds as $dvd){
+    foreach($movies as $movie){
         /**
-         * @var $dvd <MyNameSpace>\Dvd
+         * @var $movie <MyNameSpace>\Movie
          */
-        print 'id = ' . $dvd->getId();
+        print 'id = ' . $movie->getId();
         print '<br>';
-        print 'title = ' . $dvd->getTitle();
+        print 'title = ' . $movie->getTitle();
         print '<br>';
-        print 'category' . $dvd->getCategory();
-        print '<p>';
-    
     }
 ```
 
@@ -101,7 +99,6 @@ For more details see below. Also there is a full sample web application project 
  [pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
 
 # More detailed usage instructions (and important assumptions)
-
 
 ## ASSUMPTION 1: lowerCamelCase - DB table column names matching PHP Class properties
 This tool assumes your database table column names, and their corresponding PHP private class properties are named consistently in 'lowerCamelCase'
@@ -121,12 +118,11 @@ e.g.
 
 ``` php
 
-    $p = new Product();
-    $p->setDescription('hammer');
-    $p->setPrice(9.99);
+    $m = new Movie();
+    $m->seetTitle('Jaws');
+    $m->setPrice(9.99);
     etc.
 ```
-
 
 ## ASSUMPTION 3: Each class has an integer, `id` property
 Each Entity class should have an integer `id` property.
@@ -136,25 +132,54 @@ This property should be an `AUTO_INCREMENT` primary key in the database table sc
     -- SQL statement to create the table --
     create table if not exists movie (
         id integer primary key AUTO_INCREMENT,
-        descrition text,
+        title text,
         price float
     );
 ```
 
 
+
+## ASSUMPTION 4: DB table name is singular, lowerCamelCase
+This tool assumes your database table name is singular, lower case. E.g.
+
+- table name: `movie`
+- entity class name: `Movie.php`
+
+
 ## Step 1: Create your DB tables.
 e.g. create your tables (with integer 'id' field, primary key, auto-increment)
 
-e.g. SQL table to store DVD data
+e.g. SQL table to store Movie data
 ```sql
     -- SQL statement to create the table --
-    create table if not exists product (
-        id:int primary key AUTO_INCREMENT,
-        title:text,
-        category:text,
-        price:float
+    create table if not exists movie (
+        id int primary key AUTO_INCREMENT,
+        title text,
+        price float,
+        category text
     )
 ```
+
+NOTE: You do this through code if you put this SQL into the special constant `CREATE_TABLE_SQL` like this:
+
+```php
+    class Movie
+    {
+        const CREATE_TABLE_SQL =
+    <<<HERE
+     CREATE TABLE IF NOT EXISTS movie (
+         id integer PRIMARY KEY AUTO_INCREMENT,
+         title text,
+         price float,
+         category text
+     )
+     HERE;
+    
+        ... rest of class ...
+```
+
+See notes about method `createTable()` below ...
+
 
 ## Step 2: Create a corresponding PHP (entity) class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
 e.g.
@@ -164,7 +189,7 @@ e.g.
     namespace Whatever;
     
 
-    class Dvd
+    class Movie
     {
         private $id;
         private $title;
@@ -176,7 +201,7 @@ e.g.
             
 ## Step 3: Create a repository class mapping your DB table to your PHP entity class.
 
-e.g. create repository class DvdRepository mapping from table `dvds` to PHP class `Evote\Dvd`:
+e.g. create repository class DvdRepository mapping from table `movie` to PHP class `Evote\Movie`:
 
 ``` php
 
@@ -186,7 +211,7 @@ e.g. create repository class DvdRepository mapping from table `dvds` to PHP clas
     use Mattsmithdev\PdoCrudRepo\DatabaseManager;
     use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
     
-    class DvdRepository extends DatabaseTableRepository
+    class MovieRepository extends DatabaseTableRepository
     {
     }
     
@@ -195,7 +220,7 @@ e.g. create repository class DvdRepository mapping from table `dvds` to PHP clas
 
 ## Step 4: Now use the 'magically appearing' static DB CRUD methods.
 
-e.g. to get an array of all dvd records from table 'dvds' just write:
+e.g. to get an array of all dvd records from table 'movie' just write:
 
 ``` php
     // the DatabaseManager class needs the following 4 constants to be defined in order to create the DB connection
@@ -204,8 +229,8 @@ e.g. to get an array of all dvd records from table 'dvds' just write:
     define('DB_PASS', '<db_userpassword>');
     define('DB_NAME', '<db_name>');
 
-    $dvdRepository = new DvdRepository();
-    $dvds = $dvdRepository->getAll();
+    $movieRepository = new MovieRepository();
+    $movies = $movieRepository->getAll();
     
 ```   
 
@@ -215,7 +240,7 @@ NOTE: Can pass optional params to override defaults when creating Repository cla
 
     ```php
     $params = [
-        'namespace' => 'DifferentNmeSpace'
+        'namespace' => 'DifferentNameSpace'
     ];
     $repo = new DvdRepository($params);
     ```
@@ -229,7 +254,7 @@ NOTE: Can pass optional params to override defaults when creating Repository cla
     $repo = new DvdRepository($params);
     ```
     
-- tablename no lowercase version of entity class for repo:
+- tablename not lowercase version of entity class for repo:
     ```php
     $params = [
         'tableName' => 'differentTableName'
