@@ -32,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Mattsmithdev\\PdoCrudRepoTest\\": "tests",
+            "Mattsmithdev\\PdoCrudRepoTest\\": "tests"
         }
     },
     "scripts": {
