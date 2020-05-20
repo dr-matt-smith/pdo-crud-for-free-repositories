@@ -1,14 +1,10 @@
 <?php
-/**
- * User: mattsmithdev
- * Date: 18/02/2016
- * Time: 11:58
- *
- * based on PDO tutorial at URL:
- * http://culttt.com/2012/10/01/roll-your-own-pdo-php-class/
- */
+
 
 namespace Mattsmithdev\PdoCrudRepo;
+
+use Symfony\Component\Dotenv\Dotenv;
+
 
 /**
  * Class DatabaseManager - make things easy to work with MySQL DBs and PDO
@@ -17,28 +13,34 @@ namespace Mattsmithdev\PdoCrudRepo;
 class DatabaseManager
 {
     /**
-     * get host name from config constant
+     * host name
      * @var string
      */
-    private $host = DB_HOST;
+    private $host;
 
     /**
-     * get DB username from config constant
+     * host port number
      * @var string
      */
-    private $user = DB_USER;
+    private $port;
 
     /**
-     * get DB password from config constant
+     * DB username
      * @var string
      */
-    private $pass = DB_PASS;
+    private $user;
 
     /**
-     * get DB name from config constant
+     * DB password
      * @var string
      */
-    private $dbname = DB_NAME;
+    private $pass;
+
+    /**
+     * DB name
+     * @var string
+     */
+    private $dbname;
 
     /**
      * the DataBase Handler is our db connection object
@@ -54,8 +56,10 @@ class DatabaseManager
 
     public function __construct()
     {
+        $this->loadCredentialsFromDotEnv();
+
         // DSN - the Data Source Name - requred by the PDO to connect
-        $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
+        $dsn = 'mysql:host=' . $this->host . ':' . $this->port . ';dbname=' . $this->dbname;
         try {
             // Set options
             $options = array(
@@ -68,6 +72,24 @@ class DatabaseManager
             print 'sorry - a database error occured - please contact the site administrator ...';
             print '<br>';
             print  $e->getMessage();
+        }
+    }
+
+    private function loadCredentialsFromDotEnv()
+    {
+        // load dotenv file
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__.'/../../../../.env');
+
+        // extract values
+        $this->host = $_ENV['MYSQL_HOST'];
+        $this->port = $_ENV['MYSQL_PORT'];
+        $this->user = $_ENV['MYSQL_USER'];
+        $this->pass = $_ENV['MYSQL_PASSWORD'];
+        $this->dbname = $_ENV['MYSQL_DATABASE'];
+
+        if(!$this->host){
+            throw new \Exception("\n\n ********** missing MYSQL_HOST environment value - or perhaps mnissing .env file altogether ...\n\n");
         }
     }
 

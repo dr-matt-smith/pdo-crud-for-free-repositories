@@ -29,7 +29,7 @@ $ composer require mattsmithdev/pdo-crud-for-free-repositories
 
 ## Usage
 
-This example assumes you have a MySQL DB table named 'movie', with columns 'id' and 'title'. You need to write a corresponding class 'Movie' (note capitalization on the first letter). Also you need to write a repository class to work between your PHP class and is corresponding table, in this example the repository class is named 'MovieRepository':
+This example assumes you have a MySQL DB table named 'movie', with columns 'id' and 'title'. You need to write a corresponding class 'Movie' (note capitalization on the first letter - since this is a PHP class). Also you need to write a repository class to work between your PHP class and is corresponding table, in this example the repository class is named 'MovieRepository':
 
 ``` php
     // file: /src/Movie.php
@@ -50,13 +50,12 @@ This example assumes you have a MySQL DB table named 'movie', with columns 'id' 
 
 
 ``` php
-    // file: /src/DvdRepository.php
+    // file: /src/MovieRepository.php
     namespace <MyNameSpace>;
     
-    use Mattsmithdev\PdoCrudRepo\DatabaseManager;
     use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
     
-    class DvdRepository extends DatabaseTableRepository
+    class MovieRepository extends DatabaseTableRepository
     {
         // no methods needed if you've followed defaults
         // all the 'magic' is done through relfection ...
@@ -69,12 +68,6 @@ This example assumes you have a MySQL DB table named 'movie', with columns 'id' 
     // file: /public-web/index.php or /src/SomeController->method()
     
     require_once __DIR__ . '/<PATH_TO_AUTLOAD>';
-    
-    // the DatabaseManager class needs the following 4 constants to be defined in order to create the DB connection
-    define('DB_HOST', '<host>');
-    define('DB_USER', '<db_username>');
-    define('DB_PASS', '<db_userpassword>');
-    define('DB_NAME', '<db_name>');
     
     // create a repository object
     use <MyNameSpace>\MovieRepository;
@@ -95,6 +88,16 @@ This example assumes you have a MySQL DB table named 'movie', with columns 'id' 
     }
 ```
 
+Finally, you need to have defined your DB connection credentialks in a file `.env` as follows:
+
+```dotenv
+    MYSQL_USER=root
+    MYSQL_PASSWORD=passpass
+    MYSQL_HOST=127.0.0.1
+    MYSQL_PORT=3306
+    MYSQL_DATABASE=evote
+```
+
 For more details see below. Also there is a full sample web application project on GitGub at:
  [pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
 
@@ -108,6 +111,7 @@ e.g.
     title
     category
     price
+    vatRate
 
 ## ASSUMPTION 2: No constructor for your PHP classes.
 due to the nature of PDO populating properties of objects when DB rows are converted into object instances
@@ -139,11 +143,15 @@ This property should be an `AUTO_INCREMENT` primary key in the database table sc
 
 
 
-## ASSUMPTION 4: DB table name is singular, lowerCamelCase
-This tool assumes your database table name is singular, lower case. E.g.
+## ASSUMPTION 4: DB table name is singular and all lower case
+This tool assumes your database table name is singular, all **lower case**. E.g.
 
 - table name: `movie`
-- entity class name: `Movie.php`
+    - entity class name: `Movie.php`
+
+- table name: `moviecategory`
+    - entity class name: `MovieCategory.php`
+
 
 
 ## Step 1: Create your DB tables.
@@ -220,18 +228,11 @@ e.g. create repository class DvdRepository mapping from table `movie` to PHP cla
 
 ## Step 4: Now use the 'magically appearing' static DB CRUD methods.
 
-e.g. to get an array of all dvd records from table 'movie' just write:
+e.g. to get an array of all movie records from table 'movie' just write:
 
 ``` php
-    // the DatabaseManager class needs the following 4 constants to be defined in order to create the DB connection
-    define('DB_HOST', '<host>');
-    define('DB_USER', '<db_username>');
-    define('DB_PASS', '<db_userpassword>');
-    define('DB_NAME', '<db_name>');
-
     $movieRepository = new MovieRepository();
-    $movies = $movieRepository->getAll();
-    
+    $movies = $movieRepository->getAll();    
 ```   
 
 NOTE: Can pass optional params to override defaults when creating Repository class:
@@ -305,7 +306,7 @@ e.g.
     $deleteSuccess = $movieRepository->deleteAll();
 ```
     
-## ->create($dvd)
+## ->insert($movie)
 this method adds a new row to the database, based on the contents of the provided object
 (any 'id' in this object is ignored, since the table is auto-increment, so it's left to the DB to assign a new, unique 'id' for new records)
 returns the 'id' of the new record (or -1 if error when inserting)
@@ -314,14 +315,14 @@ e.g.
 ``` php
 
     // delete row in database table 'dvds' with id=12
-    $dvd = new Dvd();
-    $dvd->setTitle('Jaws II');
-    $dvd->setCategory('thriller');
-    $dvd->setPrice(9.99);
+    $movie = new Movie();
+    $movie->setTitle('Jaws II');
+    $movie->setCategory('thriller');
+    $movie->setPrice(9.99);
     
-    // create the new Dvd row
-    $dvdRepository = new DvdRepository();
-    $id = $dvdRepository->create($dvd);
+    // create the new Movie row
+    $movieRepository = new MovieRepository();
+    $id = $movieRepository->insert($movie);
     
     // decision based on success/failure of insert
     if ($id < 0){
@@ -331,16 +332,16 @@ e.g.
     }
 ```    
     
-## ->update($dvd)
+## ->update($movie)
 This method adds a UPDATES an existing row in the database, based on the contents of the provided object
 returns true/false depending on success of the deletion
 
 e.g.
 
 ``` php
-    // update DB record for object 'dvd'
-    $dvdRepository = new DvdRepository();
-    $updateSuccess = $dvdRepository->update($dvd);
+    // update DB record for object 'movie'
+    $movieRepository = new MovieRepository();
+    $updateSuccess = $movieRepository->update($movie);
 ```    
             
 ## ->searchByColumn($columnName, $searchText))
@@ -350,9 +351,9 @@ returns an array of objects that match an SQL 'LIKE' query
 e.g.
 
 ``` php
-    // get all Dvds with 'jaws' in the title
-    $dvdRepository = new DvdRepository();
-    $jawsDvds = $dvdRepository->searchByColumn('title', 'jaws');
+    // get all Movies with 'jaws' in the title
+    $movieRepository = new MovieRepository();
+    $jawsMovies = $movieRepository->searchByColumn('title', 'jaws');
 ```
 
 ## ->dropTable()
@@ -475,7 +476,6 @@ Here is an example of a simple script to update a table schema and insert some i
 
 ```php
 <?php
-require_once __DIR__ . '/../config/db.php'; // defines the 4 DB constants
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Tudublin\Movie;
@@ -502,8 +502,8 @@ $m2->setPrice(9.99);
 $m2->setCategory('entertainment');
 
 // (3) insert objects into DB
-$movieRespository->create($m1);
-$movieRespository->create($m2);
+$movieRespository->insert($m1);
+$movieRespository->insert($m2);
 
 // (4) test objects are there
 $movies = $movieRespository->findAll();
@@ -517,7 +517,7 @@ OUTPUT:
 --------------- DatabaseTableRepository->createTable() ----------------
 NOTE:: Looking for a constant CREATE_TABLE_SQL defined in the entity class associated with this repository
 -----------------------------------------------------------------------
-<pre>/Users/matt/Documents/github/pdo-crud-for-free-repositories/db/migrateAndLoadFixtures.php:35:
+<pre>/Users/matt/Documents/github/pdo-crud-for-free-repositories/db/movieMigrationAndFixtures.php:35:
 array(2) {
   [0] =>
   class Tudublin\Movie#8 (4) {

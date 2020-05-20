@@ -5,24 +5,21 @@ All Notable changes to `pdo-crud-for-free-repositories` will be documented in th
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
 ## NEXT - 2021...
-
-- some SQL generation (CREATE TABLE etc.)
+not sure all seems to be working nicely ....
 
 
 ### Added
-2 main changes for this release:
+major change:
 
-- default constructor for DatabaseTableRepository()
-
-    - defaults are that <Name>Repository relates to a <Name> entity class
-    - <Name> entity class is in same namespace as <Name>Repository
-    - thee DB table is <name> (singular, lowercase)
+-  DB credentials are now read from a `.env` file
 
 ### Deprecated
-- constructor for DatabaseTableRepository()
+- remove dependency on global constants (since read from `.env`)
+
+- changed name of method to insert row into database from `create(...)` to `insert(...)`
 
 ### Fixed
-- Nothing
+- updated README - removed more old refernces to `dvd` (replaced with `movie`)
 
 ### Removed
 - Nothing

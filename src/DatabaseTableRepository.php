@@ -224,7 +224,7 @@ class DatabaseTableRepository
      * @param Object $object
      * @return integer
      */
-    public function create($object)
+    public function insert($object)
     {
         $db = new DatabaseManager();
         $connection = $db->getDbh();
