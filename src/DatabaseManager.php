@@ -12,6 +12,7 @@ use Symfony\Component\Dotenv\Dotenv;
  */
 class DatabaseManager
 {
+    public const DATBASE_EXISTS = 1007;
     /**
      * host name
      * @var string
@@ -58,9 +59,44 @@ class DatabaseManager
     {
         $this->loadCredentialsFromDotEnv();
 
-        // DSN - the Data Source Name - requred by the PDO to connect
-        $dsn = 'mysql:host=' . $this->host . ':' . $this->port . ';dbname=' . $this->dbname;
+        // -- first -- create DB connection with no DB selected, and try to create it --
         try {
+            // DSN - the Data Source Name - requred by the PDO to connect
+            $dsn = 'mysql:host=' . $this->host . ':' . $this->port;
+
+            // Set options
+            $options = array(
+                \PDO::ATTR_PERSISTENT => true,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+            );
+            $this->dbh = new \PDO($dsn, $this->user, $this->pass, $options);
+
+            $sql = 'CREATE DATABASE ' . $this->dbname;
+            $statement = $this->dbh->prepare($sql);
+            $success = $statement->execute();
+
+        } catch (\PDOException $e) {
+            if($this->databaseExists($e)){
+                // database already exists - all good
+//                print "using database '{$this->dbname}' \n";
+
+            } else {
+                // some other error
+                $this->error = $e->getMessage();
+                print 'sorry - a database error occured - please contact the site administrator ...';
+                print '<br>';
+                print  $e->getMessage();
+
+            }
+        }
+
+        if(!empty($success)){
+            print "database '{$this->dbname}'' did not exists, so new schema created \n";
+        }
+
+        // -- second -- now DB exists should be able to connect to it
+        try {
+            $dsn = 'mysql:host=' . $this->host . ':' . $this->port . ';dbname=' . $this->dbname;
             // Set options
             $options = array(
                 \PDO::ATTR_PERSISTENT => true,
@@ -72,7 +108,14 @@ class DatabaseManager
             print 'sorry - a database error occured - please contact the site administrator ...';
             print '<br>';
             print  $e->getMessage();
+            return;
         }
+    }
+
+    private function databaseExists(\PDOException $e)
+    {
+        $errorCode = $e->errorInfo[1];
+        return self::DATBASE_EXISTS == $errorCode;
     }
 
     private function loadCredentialsFromDotEnv()
@@ -89,7 +132,7 @@ class DatabaseManager
         $this->dbname = $_ENV['MYSQL_DATABASE'];
 
         if(!$this->host){
-            throw new \Exception("\n\n ********** missing MYSQL_HOST environment value - or perhaps mnissing .env file altogether ...\n\n");
+            throw new \Exception("\n\n ********** missing MYSQL_HOST environment value - or perhaps missing .env file altogether ...\n\n");
         }
     }
 

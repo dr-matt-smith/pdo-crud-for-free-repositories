@@ -335,11 +335,32 @@ EXAMPLE OF SQL needed in Entity class:
         if(empty($sql)){
             $sql = $this->classNameForDbRecords::CREATE_TABLE_SQL;
         }
-        $db = new DatabaseManager();
-        $connection = $db->getDbh();
 
-        $statement = $connection->prepare($sql);
-        $statement->execute();
+        try{
+            $db = new DatabaseManager();
+            $connection = $db->getDbh();
+
+            $statement = $connection->prepare($sql);
+            $statement->execute();
+        } catch (\PDOException $e){
+            $this->error = $e->getMessage();
+            print "*** \n";
+            print "*** sorry - a database error occured - please contact the site administrator ***\n";
+            print "trying to execute this SQL: \n";
+            print "$sql \n";
+            print  $e->getMessage();
+            print "*** \n";
+            print "*** \n";
+            return;
+        }
+
+    }
+
+    public function resetTable($sql = null)
+    {
+        $this->dropTable();
+        $this->createTable($sql);
+        $this->deleteAll();
     }
 
 

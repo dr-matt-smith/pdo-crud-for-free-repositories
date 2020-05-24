@@ -88,7 +88,7 @@ This example assumes you have a MySQL DB table named 'movie', with columns 'id' 
     }
 ```
 
-Finally, you need to have defined your DB connection credentialks in a file `.env` as follows:
+Finally, you need to have defined your DB connection credentials in a file `.env` as follows:
 
 ```dotenv
     MYSQL_USER=root
@@ -97,6 +97,8 @@ Finally, you need to have defined your DB connection credentialks in a file `.en
     MYSQL_PORT=3306
     MYSQL_DATABASE=evote
 ```
+
+The named database schema will be created, if it does not already exist...
 
 For more details see below. Also there is a full sample web application project on GitGub at:
  [pdo-crud-for-free-repositories-example-project](https://github.com/dr-matt-smith/pdo-crud-for-free-repositories-example-project)
@@ -112,6 +114,8 @@ e.g.
     category
     price
     vatRate
+    firstName
+    aLongVariableNameOfSeveralWords
 
 ## ASSUMPTION 2: No constructor for your PHP classes.
 due to the nature of PDO populating properties of objects when DB rows are converted into object instances
@@ -141,7 +145,7 @@ This property should be an `AUTO_INCREMENT` primary key in the database table sc
     );
 ```
 
-
+NOTE: Please don't name this anything else, not `idMovie` or 'movieId' or 'ID' etc. - just plain old `id`
 
 ## ASSUMPTION 4: DB table name is singular and all lower case
 This tool assumes your database table name is singular, all **lower case**. E.g.
@@ -151,6 +155,9 @@ This tool assumes your database table name is singular, all **lower case**. E.g.
 
 - table name: `moviecategory`
     - entity class name: `MovieCategory.php`
+    
+- table name: `alongtablename`
+    - entity class name: `ALongTableName`
 
 
 
@@ -209,7 +216,7 @@ e.g.
             
 ## Step 3: Create a repository class mapping your DB table to your PHP entity class.
 
-e.g. create repository class DvdRepository mapping from table `movie` to PHP class `Evote\Movie`:
+e.g. create repository class MovieRepository mapping from table `movie` to PHP class `Evote\Movie`:
 
 ``` php
 
@@ -225,6 +232,28 @@ e.g. create repository class DvdRepository mapping from table `movie` to PHP cla
     
 ```    
 
+Note - personally I find it handy to add a method to create a new object and insert it into the DB - e.g.:
+
+```php
+    <?php
+    namespace Tudublin;
+    
+    
+    use Mattsmithdev\PdoCrudRepo\DatabaseTableRepository;
+    
+    class MovieRepository extends DatabaseTableRepository
+    {
+        public function createAndInsert($title, $price, $category)
+        {
+            $m = new Movie();
+            $m->setTitle($title);
+            $m->setPrice($price);
+            $m->setCategory($category);
+    
+            $this->insert($m);
+        }
+    }
+```
 
 ## Step 4: Now use the 'magically appearing' static DB CRUD methods.
 
@@ -243,7 +272,7 @@ NOTE: Can pass optional params to override defaults when creating Repository cla
     $params = [
         'namespace' => 'DifferentNameSpace'
     ];
-    $repo = new DvdRepository($params);
+    $repo = new MovieRepository($params);
     ```
     
 
@@ -252,7 +281,7 @@ NOTE: Can pass optional params to override defaults when creating Repository cla
     $params = [
         'className' => 'differentClassName'
     ];
-    $repo = new DvdRepository($params);
+    $repo = new MovieRepository($params);
     ```
     
 - tablename not lowercase version of entity class for repo:
@@ -260,7 +289,7 @@ NOTE: Can pass optional params to override defaults when creating Repository cla
     $params = [
         'tableName' => 'differentTableName'
     ];
-    $repo = new DvdRepository($params);
+    $repo = new MovieRepository($params);
     ```
 
 ## ->findAll()
@@ -269,8 +298,8 @@ e.g.
 
 ``` php
     // array of Dvd objects, populated from database table 'dvds'
-    $dvdRepository = new DvdRepository();
-    $dvds = $dvdRepository->find();
+    $movieRepository = new MovieRepository();
+    $movies = $movieRepository->find();
 ```
 
 ## ->find($id)
@@ -280,8 +309,8 @@ e.g.
 
 ``` php
     // one Dvd object (or 'null'), populated by row in database table 'dvds' with id=27
-    $dvdRepository = new DvdRepository();
-    $dvd = $dvdRepository->find(27);
+    $movieRepository = new MovieRepository();
+    $movie = $movieRepository->find(27);
 ```
 
 ## ->delete($id)
@@ -291,8 +320,8 @@ e.g.
 
 ``` php
     // delete row in database table 'dvds' with id=12
-    $dvdRepository = new DvdRepository();
-    $deleteSuccess = $dvdRepository->delete(12);
+    $movieRepository = new MovieRepository();
+    $deleteSuccess = $movieRepository->delete(12);
 ```
 
     
@@ -390,16 +419,28 @@ class Movie
     ... rest of class ...
 ```
 
+
+## ->createTable($sql)
+As above, but the SQL to create the table can be provided as a string parameter to the method
+
+## ->resetTable( $sql = null  )
+This runs the sequence:
+```php
+    $this->dropTable();
+    $this->createTable($sql); // pass through any SQL provided
+    $this->deleteAll();
+```
+
+any SQL provided as a parameter is passed threough to `createTable(...)`.
+
+
 Then in our migration code (for example) we can drop the old table and create a new one as follows:
 
 ``` php
     $movieRepository = new MovieRepository();
-    $movieRespository->dropTable();
-    $movieRespository->createTable();
+    $movieRespository->resetTable();
 ```
 
-## ->createTable($sql)
-As above, but the SQL to create the table can be provided as a string parameter to the method
 
 ## custom PDO methods
 If the 'free' DB methods are insufficient, it's easy to add your own methods to your PHP classes that correspond to your DB tables.
@@ -472,7 +513,27 @@ and here is an example of its usage, in a controller function:
 
 ## Migrations and fixtures
 
-Here is an example of a simple script to update a table schema and insert some initial data. It assumes a Movie and MovieRepository class have been declared:
+Here are examples of a simple scripts to update a table schema and insert some initial data.
+
+If we have added a `createAndInsert(...)` method to our Repository class then it can be as simple as this:
+
+```php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Tudublin\MovieRepository;
+
+$movieRepository = new MovieRepository();
+
+// (1) drop then re-create table
+$movieRepository->resetTable();
+
+// (3) create objects
+$movieRepository->createAndInsert('Jaws', 9.99, 'horror');
+$movieRepository->createAndInsert('Jumanji', 7, 'entertainment');
+```
+
+If we don't have  `createAndInsert(...)` method then we have to create each object and then insert it into the DB table:
 
 ```php
 <?php
@@ -484,11 +545,7 @@ use Tudublin\MovieRepository;
 $movieRespository = new MovieRepository();
 
 // (1) drop then create table
-$movieRespository->dropTable();
-$movieRespository->createTable();
-
-// (2) delete any existing objects
-$movieRespository->deleteAll();
+$movieRespository->resetTable();
 
 // (3) create objects
 $m1 = new Movie();
