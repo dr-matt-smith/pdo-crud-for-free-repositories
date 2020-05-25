@@ -196,7 +196,7 @@ NOTE: You may do this through code if you put this SQL into the special constant
 See notes about Repository methods `createTable()` and `resetTable()` below ...
 
 
-## Step 2: Create a corresponding PHP (entity) class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
+## Step 2: Create a corresponding PHP (entity) class
 e.g.
 
 ``` php
@@ -214,7 +214,7 @@ e.g.
         // and public getters and setters ...
 ```
             
-## Step 3: Create a repository class mapping your DB table to your PHP entity class.
+## Step 3: Create a repository class mapping your DB table to your PHP entity class (that is a subclass from Mattsmithdev\PdoCrud\DatabaseTableRepository)
 
 e.g. create repository class MovieRepository mapping from table `movie` to PHP class `Evote\Movie`:
 
