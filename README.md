@@ -543,11 +543,11 @@ $movieRepository = new MovieRepository();
 // (1) drop then re-create table
 $movieRepository->resetTable();
 
-// (3) create objects
+// (2) create objects
 $movieRepository->createAndInsert('Jaws', 9.99, 'horror');
 $movieRepository->createAndInsert('Jumanji', 7, 'entertainment');
 
-// (4) test objects are there
+// (3) test objects are there
 $movies = $movieRespository->findAll();
 print '<pre>';
 var_dump($movies);
