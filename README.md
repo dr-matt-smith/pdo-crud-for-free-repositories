@@ -175,7 +175,7 @@ e.g. SQL table to store Movie data
     )
 ```
 
-NOTE: You do this through code if you put this SQL into the special constant `CREATE_TABLE_SQL` like this:
+NOTE: You may do this through code if you put this SQL into the special constant `CREATE_TABLE_SQL` like this:
 
 ```php
     class Movie
@@ -193,7 +193,7 @@ NOTE: You do this through code if you put this SQL into the special constant `CR
         ... rest of class ...
 ```
 
-See notes about method `createTable()` below ...
+See notes about Repository methods `createTable()` and `resetTable()` below ...
 
 
 ## Step 2: Create a corresponding PHP (entity) class, and subclass from Mattsmithdev\PdoCrud\DatabaseTable
