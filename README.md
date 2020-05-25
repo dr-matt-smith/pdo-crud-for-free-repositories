@@ -145,7 +145,7 @@ This property should be an `AUTO_INCREMENT` primary key in the database table sc
     );
 ```
 
-NOTE: Please don't name this anything else, not `idMovie` or 'movieId' or 'ID' etc. - just plain old `id`
+NOTE: Please don't name this anything else, not `idMovie` or `movieId` or `ID` etc. - just plain old `id`
 
 ## ASSUMPTION 4: DB table name is singular and all lower case
 This tool assumes your database table name is singular, all **lower case**. E.g.
