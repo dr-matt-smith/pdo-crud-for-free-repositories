@@ -321,7 +321,7 @@ this method returns ONE object of class for the corresponding DB table record wi
 e.g.
 
 ``` php
-    // one Dvd object (or 'null'), populated by row in database table 'dvds' with id=27
+    // one Movie object (or 'null'), populated by row in database table 'movie' with id=27
     $movieRepository = new MovieRepository();
     $movie = $movieRepository->find(27);
 ```
@@ -332,7 +332,7 @@ returns true/false depending on success of the deletion
 e.g.
 
 ``` php
-    // delete row in database table 'dvds' with id=12
+    // delete row in database table 'movie' with id=12
     $movieRepository = new MovieRepository();
     $deleteSuccess = $movieRepository->delete(12);
 ```
@@ -356,13 +356,13 @@ e.g.
 
 ``` php
 
-    // delete row in database table 'dvds' with id=12
+    // create new object
     $movie = new Movie();
     $movie->setTitle('Jaws II');
     $movie->setCategory('thriller');
     $movie->setPrice(9.99);
     
-    // create the new Movie row
+    // attempt to inset row in database table 'movie' - auto assign new unique `id`
     $movieRepository = new MovieRepository();
     $id = $movieRepository->insert($movie);
     
@@ -404,7 +404,7 @@ Deletes the associated database table
 e.g.
 
 ``` php
-    // get all Movies with 'jaws' in the title
+    // drop table `movie` from DB
     $movieRepository = new MovieRepository();
     $movieRepository->dropTable();
 ```
@@ -437,7 +437,9 @@ class Movie
 As above, but the SQL to create the table can be provided as a string parameter to the method
 
 ## ->resetTable( $sql = null  )
-This runs the sequence:
+
+This runs the sequence drop / create / delete all:
+
 ```php
     $this->dropTable();
     $this->createTable($sql); // pass through any SQL provided
