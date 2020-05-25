@@ -127,7 +127,7 @@ e.g.
 ``` php
 
     $m = new Movie();
-    $m->seetTitle('Jaws');
+    $m->setTitle('Jaws');
     $m->setPrice(9.99);
     etc.
 ```
