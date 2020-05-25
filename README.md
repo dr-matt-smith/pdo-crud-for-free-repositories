@@ -255,7 +255,20 @@ Note - personally I find it handy to add a method to create a new object and ins
     }
 ```
 
-## Step 4: Now use the 'magically appearing' static DB CRUD methods.
+## Step 4: Define your MySQL database credentials in a file `.env`
+
+Define your DB connection credentials in a file `.env` as follows:
+
+```dotenv
+    MYSQL_USER=root
+    MYSQL_PASSWORD=passpass
+    MYSQL_HOST=127.0.0.1
+    MYSQL_PORT=3306
+    MYSQL_DATABASE=evote
+```
+
+
+## Step 5: Now use the 'magically appearing' DB CRUD methods.
 
 e.g. to get an array of all movie records from table 'movie' just write:
 
