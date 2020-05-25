@@ -546,6 +546,11 @@ $movieRepository->resetTable();
 // (3) create objects
 $movieRepository->createAndInsert('Jaws', 9.99, 'horror');
 $movieRepository->createAndInsert('Jumanji', 7, 'entertainment');
+
+// (4) test objects are there
+$movies = $movieRespository->findAll();
+print '<pre>';
+var_dump($movies);
 ```
 
 If we don't have  `createAndInsert(...)` method then we have to create each object and then insert it into the DB table:
