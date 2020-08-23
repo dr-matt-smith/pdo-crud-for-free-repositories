@@ -315,9 +315,9 @@ this method returns an array of ALL objects for each row of the corresponding DB
 e.g.
 
 ``` php
-    // array of Dvd objects, populated from database table 'dvds'
+    // array of Movie objects, populated from database table 'movie'
     $movieRepository = new MovieRepository();
-    $movies = $movieRepository->find();
+    $movies = $movieRepository->findAll();
 ```
 
 ## ->find($id)
@@ -404,7 +404,7 @@ e.g.
 ```
 
 ## ->dropTable()
-Deletes the associated database table
+Deletes the associated database table and all its data
 
 e.g.
 
