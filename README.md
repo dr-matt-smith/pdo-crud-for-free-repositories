@@ -124,7 +124,7 @@ e.g.
 
 ## ASSUMPTION 2: No constructor for your PHP classes.
 due to the nature of PDO populating properties of objects when DB rows are converted into object instances
-do not have a constructor for the PHP classes that correspond to your DB tables
+**do not have a constructor** for the PHP classes that correspond to your DB tables
 
 so you'd create a new object, and use the objects public 'setter' methods
 e.g.
