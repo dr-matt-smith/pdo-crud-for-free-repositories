@@ -219,7 +219,7 @@ e.g.
         // and public getters and setters ...
 ```
             
-## Step 3: Create a repository class mapping your DB table to your PHP entity class (that is a subclass from Mattsmithdev\PdoCrud\DatabaseTableRepository)
+## Step 3: Create a repository class mapping your DB table to your PHP entity class (that is a subclass from Mattsmithdev\PdoCrudRepo\DatabaseTableRepository)
 
 e.g. create repository class MovieRepository mapping from table `movie` to PHP class `Evote\Movie`:
 
