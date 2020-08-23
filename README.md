@@ -1,4 +1,4 @@
-# pdo-crud-for-free-repositories+(repositories)
+# pdo-crud-for-free-repositories
 
 [![Build Status](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories.svg?branch=master)](https://travis-ci.org/dr-matt-smith/pdo-crud-for-free-repositories) [![Latest Stable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/stable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Total Downloads](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/downloads)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![Latest Unstable Version](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/v/unstable)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories) [![License](https://poser.pugx.org/mattsmithdev/pdo-crud-for-free-repositories/license)](https://packagist.org/packages/mattsmithdev/pdo-crud-for-free-repositories)
 
@@ -218,8 +218,8 @@ e.g.
         
         // and public getters and setters ...
 ```
-            
-## Step 3: Create a repository class mapping your DB table to your PHP entity class (that is a subclass from Mattsmithdev\PdoCrudRepo\DatabaseTableRepository)
+            `
+## Step 3: Create a repository class mapping your DB table to your PHP entity class (that is a subclass from `Mattsmithdev\PdoCrudRepo\DatabaseTableRepository`)
 
 e.g. create repository class MovieRepository mapping from table `movie` to PHP class `Evote\Movie`:
 
