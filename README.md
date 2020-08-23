@@ -41,6 +41,11 @@ This example assumes you have a MySQL DB table named 'movie', with columns 'id' 
         private $id;
         private $title;
         
+        public function getId()
+        {
+            return $this->id;
+        }
+        
         public function getTitle()
         {
             return $this->title;
