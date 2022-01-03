@@ -167,40 +167,15 @@ This tool assumes your database table name is singular, all **lower case**. E.g.
 
 
 ## Step 1: Create your DB tables.
-e.g. create your tables (with integer 'id' field, primary key, auto-increment)
+You need a database schema
+- if not present, a new one will be created
 
-e.g. SQL table to store Movie data
-```sql
-    -- SQL statement to create the table --
-    create table if not exists movie (
-        id int primary key AUTO_INCREMENT,
-        title text,
-        price float,
-        category text
-    )
-```
+For each entity class you need a corresponding DB table (with integer 'id' field, primary key, auto-increment)
+- you can create these in your DB management tool
+- you can use the Repository method `createTable()`
+  - which can attempt to infer column data types from yhour entity properties, or use your own provided SQL 
 
-NOTE: You may do this through code if you put this SQL into the special constant `CREATE_TABLE_SQL` like this:
-
-```php
-    class Movie
-    {
-        const CREATE_TABLE_SQL =
-    <<<HERE
-     CREATE TABLE IF NOT EXISTS movie (
-         id integer PRIMARY KEY AUTO_INCREMENT,
-         title text,
-         price float,
-         category text
-     )
-     HERE;
-    
-        ... rest of class ...
-```
-
-See notes about Repository methods `createTable()` and `resetTable()` below ...
-
-
+  
 ## Step 2: Create a corresponding PHP (entity) class
 e.g.
 
@@ -211,10 +186,10 @@ e.g.
 
     class Movie
     {
-        private $id;
-        private $title;
-        private $category;
-        private $price;
+        private int $id;
+        private string $title;
+        private string $category;
+        private float $price;
         
         // and public getters and setters ...
 ```
@@ -248,7 +223,7 @@ Note - personally I find it handy to add a method to create a new object and ins
     
     class MovieRepository extends DatabaseTableRepository
     {
-        public function createAndInsert($title, $price, $category)
+        public function createAndInsert($title, $price, $category): void
         {
             $m = new Movie();
             $m->setTitle($title);
@@ -416,32 +391,46 @@ e.g.
 
 
 ## ->createTable()
-If no SQL parameter is provided, then the code looks for a constant CREATE_TABLE_SQL in the associated entity class, and will execute that SQL
+(method 1) If no SQL parameter is provided, then the code looks for a constant CREATE_TABLE_SQL in the associated entity class, and will execute that SQL.
+(method 2) If no such constant is found, the repository class will attempt to infer DB datatypes based on the data types of your entity class properties.
 
-e.g. In class Movie() there is constant:
+### Method 2 - automatic DB column type inference
+A class with typed properties like this doesn't need you to provide any SQL for the metod to work
 
 ```php
+    class Movie
+    {
+        private int $id;
+        private string $title;
+        private float $price;
+        private string $category;
+```
 
-class Movie
-{
-    const CREATE_TABLE_SQL =
-<<<HERE
- CREATE TABLE IF NOT EXISTS movie (
-     id integer PRIMARY KEY AUTO_INCREMENT,
-     title text,
-     price float,
-     category text
- )
- HERE;
+### Method 1 - constant declaring your table create SQL
 
-    ... rest of class ...
+Here is an example where the class expliciity delares a constant CREATE_TABLE_SQL containing the table create SQL you want to use:
+
+```php
+    class Movie
+    {
+        const CREATE_TABLE_SQL =
+    <<<HERE
+     CREATE TABLE IF NOT EXISTS movie (
+         id integer PRIMARY KEY AUTO_INCREMENT,
+         title text,
+         price float,
+         category text
+     )
+     HERE;
+    
+        ... rest of class ...
 ```
 
 
 ## ->createTable($sql)
 As above, but the SQL to create the table can be provided as a string parameter to the method
 
-## ->resetTable( $sql = null  )
+## ->resetTable( $sql = null )
 
 This runs the sequence drop / create / delete all:
 
@@ -451,7 +440,7 @@ This runs the sequence drop / create / delete all:
     $this->deleteAll();
 ```
 
-any SQL provided as a parameter is passed threough to `createTable(...)`.
+any SQL provided as a parameter is passed through to `createTable(...)`.
 
 
 Then in our migration code (for example) we can drop the old table and create a new one as follows:
@@ -535,7 +524,9 @@ and here is an example of its usage, in a controller function:
 
 Here are examples of a simple scripts to update a table schema and insert some initial data.
 
-If we have added a `createAndInsert(...)` method to our Repository class then it can be as simple as this:
+### Using a `createAndInsert(...)` Repository method
+
+If we have added a `createAndInsert(...)` method to our Repository class then fresetting the databasde and inserting fixture data can be as simple as this:
 
 ```php
 <?php
@@ -558,7 +549,26 @@ print '<pre>';
 var_dump($movies);
 ```
 
-If we don't have  `createAndInsert(...)` method then we have to create each object and then insert it into the DB table:
+Here is what that `createAndInsert(...)`  method might look like:
+
+```php
+    class MovieRepository extends DatabaseTableRepository
+    {
+        public function createAndInsert($title, $price, $category)
+        {
+            $m = new Movie();
+            $m->setTitle($title);
+            $m->setPrice($price);
+            $m->setCategory($category);
+    
+            $this->insert($m);
+        }
+    }
+```
+
+### Using accessor methods to create object data
+
+If we don't have  `createAndInsert(...)` method then we have to create each object and then insert it into the DB table using the `insert(...)` method:
 
 ```php
 <?php
@@ -596,9 +606,6 @@ var_dump($movies);
 OUTPUT:
 
 ```bash
---------------- DatabaseTableRepository->createTable() ----------------
-NOTE:: Looking for a constant CREATE_TABLE_SQL defined in the entity class associated with this repository
------------------------------------------------------------------------
 <pre>/Users/matt/Documents/github/pdo-crud-for-free-repositories/db/movieMigrationAndFixtures.php:35:
 array(2) {
   [0] =>

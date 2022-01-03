@@ -84,7 +84,8 @@ class DatatbaseUtility
         $propertiesWithSimpleKeys = [];
         foreach ($properties as $key=>$value) {
             $simpleKey = str_replace($className, '', $key);
-            $simpleKey = filter_var($simpleKey, FILTER_SANITIZE_STRING);
+            $simpleKey = trim($simpleKey);
+            $simpleKey = htmlspecialchars($simpleKey);
             $propertiesWithSimpleKeys[$simpleKey] = $value;
         }
 
@@ -155,4 +156,52 @@ class DatatbaseUtility
 
         return ' ' . implode(', ', $formattedFields) . ' ';
     }
+
+    public function dbDataType(string $type): string
+    {
+        switch($type){
+            case 'int':
+                return 'int';
+
+            case 'float':
+                return 'float';
+
+            case 'string':
+            default:
+                return 'text';
+        }
+    }
+
+    /**
+     * given array of field names output comma separate list, with equals-colon syntax
+     * e.g.
+     * input:
+     *      [
+     *          "title" => "text",
+     *          "price" => "float",
+     *          "category" => "text"
+     *      ]
+     *
+     * output
+     *       'title text, price float, category text'
+     *
+     * @param array $fields
+     * @return string
+     */
+    public function dbPropertyTypeList($sqlTypes): string
+    {
+        $sql = '';
+        foreach ($sqlTypes as $key=>$type) {
+            $sql .= "$key $type";
+
+            // if NOT last element, also append a comma
+            if($key != array_key_last($sqlTypes)){
+                $sql .= ', ';
+            }
+        }
+
+        return $sql;
+
+    }
+
 }

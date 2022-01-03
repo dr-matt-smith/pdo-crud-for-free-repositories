@@ -241,7 +241,6 @@ class DatabaseTableRepository
 
         $statement = $connection->prepare($sql);
         $statement->execute($objectAsArrayForSqlInsert);
-
         $queryWasSuccessful = ($statement->rowCount() > 0);
         if($queryWasSuccessful) {
             return $connection->lastInsertId();
@@ -329,13 +328,9 @@ EXAMPLE OF SQL needed in Entity class:
 
     public function createTable($sql = null)
     {
-        print "--------------- DatabaseTableRepository->createTable() ----------------\n";
-        print "NOTE:: Looking for a constant CREATE_TABLE_SQL defined in the entity class associated with this repository\n";
-        print "-----------------------------------------------------------------------\n";
-        if(empty($sql)){
-            $sql = $this->classNameForDbRecords::CREATE_TABLE_SQL;
+        if(null == $sql){
+            $sql = $this->getSqlToCreateTable();
         }
-
         try{
             $db = new DatabaseManager();
             $connection = $db->getDbh();
@@ -353,7 +348,30 @@ EXAMPLE OF SQL needed in Entity class:
             print "*** \n";
             return;
         }
+    }
 
+    public function getSqlToCreateTable(): string
+    {
+        // try to get from constant CREATE_TABLE_SQL in entity class
+        if($this->hasConstant()) {
+            return $this->classNameForDbRecords::CREATE_TABLE_SQL;
+        }
+
+        // try to infer from types of entity class properties
+        $sql = $this->inferSqlFromPropertyTypes();
+
+        if(!empty($sql)){
+            return $sql;
+        }
+
+        throw new \Exception('cannot find or infer SQL to create table for class ' . $this->classNameForDbRecords);
+    }
+
+    public function hasConstant(string $identifier = 'CREATE_TABLE_SQL')
+    {
+        $reflectionClass = new \ReflectionClass($this->classNameForDbRecords);
+        $constants = $reflectionClass->getConstants();
+        return array_key_exists($identifier, $constants);
     }
 
     public function resetTable($sql = null)
@@ -363,5 +381,47 @@ EXAMPLE OF SQL needed in Entity class:
         $this->deleteAll();
     }
 
+    /**
+     * @return string
+     * @throws \ReflectionException
+     *
+     * return SQL table creation string such as:
+     *  CREATE TABLE IF NOT EXISTS movie (
+     *      id integer PRIMARY KEY AUTO_INCREMENT,
+     *      title text,
+     *      price float,
+     *      category text
+     *  )
+     */
+    public function inferSqlFromPropertyTypes(): string
+    {
+        $dbUtility = new DatatbaseUtility();
+        $sql = '';
+
+        $reflectionClass = new \ReflectionClass($this->classNameForDbRecords);
+        $refletionProperties = $reflectionClass->getProperties();
+
+        $sqlTypes = [];
+        foreach ($refletionProperties as $refletionProperty) {
+            $propertyName = $refletionProperty->name;
+            $type = $refletionProperty->getType()->getName();
+
+
+            $type = $dbUtility->dbDataType($type);
+
+            // if not 'id' add to array
+            if('id' != $propertyName){
+                $sqlTypes[$propertyName] = $type;
+            }
+        }
+
+
+        $sql = 'CREATE TABLE IF NOT EXISTS ' . $this->tableName . ' ('
+            . 'id integer PRIMARY KEY AUTO_INCREMENT, '
+            . $dbUtility->dbPropertyTypeList($sqlTypes)
+            . ')';
+
+        return $sql;
+    }
 
 }
