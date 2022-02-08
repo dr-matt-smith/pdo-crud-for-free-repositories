@@ -249,6 +249,18 @@ class DatabaseTableRepository
         }
     }
 
+    /**
+     * given an array of object, loop through them and insert them each into the DB table
+     *
+     * @param array $objects]
+     */
+    public function insertMany(array $objects)
+    {
+        foreach($objects as $object){
+            $this->insert($object);
+        }
+    }
+
 
     /**
      * insert new record into the DB table
