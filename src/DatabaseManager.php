@@ -91,7 +91,7 @@ class DatabaseManager
         }
 
         if(!empty($success)){
-            print "database '{$this->dbname}'' did not exists, so new schema created \n";
+            print "database '{$this->dbname}'' did not exist, so new schema created \n";
         }
 
         // -- second -- now DB exists should be able to connect to it
