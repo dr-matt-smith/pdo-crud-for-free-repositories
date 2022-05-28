@@ -5,19 +5,18 @@ All Notable changes to `pdo-crud-for-free-repositories` will be documented in th
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
 ## NEXT ?
-not sure all seems to be working nicely ....
+- need to write some decent unit tests ...
 
 ### Added
-added new method 'insertMany(<array>)' to DatabaseTableRespository
-
-to make fixture insertion a bit easier :-)
+- Nothing
 
 ### Deprecated
+- Nothing
 
 ### Fixed
+Removed empty test, and test dependencies from composer
 
 ### Removed
-- Nothing
 
 ### Security
 - Nothing
