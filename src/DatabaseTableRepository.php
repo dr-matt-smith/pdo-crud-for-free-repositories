@@ -194,7 +194,7 @@ class DatabaseTableRepository
 
     public function searchByColumn($columnName, $searchText)
     {
-//        $columnName = filter_var($columnName, FILTER_SANITIZE_STRING);
+//        $columnName = filter_var($columnName, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $db = new DatabaseManager();
         $connection = $db->getDbh();
